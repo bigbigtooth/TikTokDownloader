@@ -9,6 +9,7 @@ from src.custom import (
     COOKIE_UPDATE_INTERVAL,
     DISCLAIMER_TEXT,
     DOCUMENTATION_URL,
+    INFO,
     LICENCE,
     MASTER,
     PROJECT_NAME,
@@ -21,6 +22,7 @@ from src.custom import (
     VERSION_BETA,
     VERSION_MAJOR,
     VERSION_MINOR,
+    WARNING,
 )
 from src.manager import Database, DownloadRecorder
 from src.module import Cookie, Register
@@ -159,6 +161,57 @@ class TikTokDownloader:
                 SERVER_PORT,
             )
         except KeyboardInterrupt:
+            self.running = False
+
+    async def run_server(self, host=None, port=None, log_level="info"):
+        """直接启动API服务器，支持自定义host和port"""
+        # 使用传入的参数或默认值
+        server_host = host if host is not None else SERVER_HOST
+        server_port = port if port is not None else SERVER_PORT
+        
+        try:
+            # 显示项目信息
+            self.project_info()
+            
+            # 检查配置和初始化
+            self.check_config()
+            await self.check_settings(False)
+            
+            # 对于API服务器模式，自动接受免责声明并设置默认语言
+            if not self.config["Disclaimer"]:
+                await self.database.update_config_data("Disclaimer", 1)
+                self.console.print(_("API服务器模式：已自动接受免责声明"), style=INFO)
+            
+            # 确保语言设置存在，如果没有则设置为中文
+            if not self.option.get("Language"):
+                await self._update_language("zh_CN")
+                self.console.print(_("API服务器模式：已设置默认语言为中文"), style=INFO)
+            
+            # 显示服务器启动信息
+            self.console.print(
+                f"正在启动 API 服务器: http://{server_host}:{server_port}",
+                style=MASTER,
+            )
+            self.console.print(
+                f"访问 http://{server_host}:{server_port}/docs 查看 API 文档",
+                highlight=True,
+            )
+            self.console.print(
+                f"访问 http://{server_host}:{server_port}/redoc 查看备用文档",
+                highlight=True,
+            )
+            
+            # 启动API服务器
+            await APIServer(
+                self.parameter,
+                self.database,
+            ).run_server(
+                server_host,
+                server_port,
+                log_level,
+            )
+        except KeyboardInterrupt:
+            self.console.print("\n正在停止服务器...", style=WARNING)
             self.running = False
 
     async def __modify_record(self):

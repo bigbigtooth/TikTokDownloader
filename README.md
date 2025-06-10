@@ -1,6 +1,6 @@
 <div align="center">
 <img src="./static/images/DouK-Downloader.png" alt="DouK-Downloader" height="256" width="256"><br>
-<h1>DouK-Downloader</h1>
+<h1>DouK-Downloader(Fork)</h1>
 <p>简体中文 | <a href="README_EN.md">English</a></p>
 <a href="https://trendshift.io/repositories/6222" target="_blank"><img src="https://trendshift.io/api/badge/repositories/6222" alt="" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 <br>
